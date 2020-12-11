@@ -54,7 +54,7 @@ const GeopointInput = React.forwardRef(function GeopointInput(props, ref) {
   const {type, level, value, markers, onChange} = props
   const typeOptions = type.options?.leaflet || {}
   const tileConfig = {...config.tileLayer, ...typeOptions.tileLayer}
-  const center = value || typeOptions.defaultLocation || config.defaultLocation || DEFAULT_CENTER
+  const center = value && value.lat && value.lng ? value : typeOptions.defaultLocation || config.defaultLocation || DEFAULT_CENTER
   const [zoom, setZoom] = useState(typeOptions.defaultZoom || config.defaultZoom || DEFAULT_ZOOM)
   const showFields = typeOptions.showFields || config.showFields || SHOW_FIELDS
   const markerRef = createRef()
@@ -67,10 +67,7 @@ const GeopointInput = React.forwardRef(function GeopointInput(props, ref) {
     )
   }
 
-  function setMarkerLocation ({ lat, lng, alt }) {
-    // set = []
-    // if (lat)
-        
+  function setMarkerLocation ({ lat, lng, alt }) {        
     onChange(
       PatchEvent.from([
         setIfMissing({
@@ -123,7 +120,7 @@ const GeopointInput = React.forwardRef(function GeopointInput(props, ref) {
         >
           <TileLayer {...tileConfig} />
 
-          {value && value.lat && (
+          {value && value.lat && value.lng && (
             <Marker
               draggable={!type.readOnly}
               onDragend={handleMarkerDragEnd}
