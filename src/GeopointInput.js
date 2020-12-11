@@ -18,6 +18,7 @@ Leaflet.Icon.Default.mergeOptions({
 
 const EMPTY_MARKERS = []
 const DEFAULT_ZOOM = 13
+const SHOW_FIELDS = false
 const DEFAULT_CENTER = [37.779048, -122.415214]
 
 const clickToMove =
@@ -55,6 +56,7 @@ const GeopointInput = React.forwardRef(function GeopointInput(props, ref) {
   const tileConfig = {...config.tileLayer, ...typeOptions.tileLayer}
   const center = value || typeOptions.defaultLocation || config.defaultLocation || DEFAULT_CENTER
   const [zoom, setZoom] = useState(typeOptions.defaultZoom || config.defaultZoom || DEFAULT_ZOOM)
+  const showFields = typeOptions.showFields || config.showFields || SHOW_FIELDS
   const markerRef = createRef()
 
   if (isMissingMapboxApiKey(tileConfig)) {
@@ -65,14 +67,18 @@ const GeopointInput = React.forwardRef(function GeopointInput(props, ref) {
     )
   }
 
-  function setMarkerLocation(latLng) {
+  function setMarkerLocation ({ lat, lng, alt }) {
+    // set = []
+    // if (lat)
+        
     onChange(
       PatchEvent.from([
         setIfMissing({
           _type: type.name,
         }),
-        set(latLng.lat, ['lat']),
-        set(latLng.lng, ['lng']),
+        ...(lat ? [set(parseFloat(lat), ['lat'])] : []),
+        ...(lng ? [set(parseFloat(lng), ['lng'])] : []),
+        ...(alt ? [set(parseFloat(alt), ['alt'])] : []),
       ])
     )
   }
@@ -139,6 +145,31 @@ const GeopointInput = React.forwardRef(function GeopointInput(props, ref) {
 
         <p className={styles.helpText}>{getHelpText(value)}</p>
       </div>
+      {showFields && (
+        <div className={styles.inputFields}>
+          <input
+            name="lat"
+            className={styles.inputField + ' ' + styles.lat}
+            type="number"
+            value={value && value.lat ? value.lat : ''}
+            onChange={evt => setMarkerLocation({ lat: evt.target.value })}
+          />
+          <input
+            name="lng"
+            className={styles.inputField + ' ' + styles.lng}
+            type="number"
+            value={value && value.lng ? value.lng : ''}
+            onChange={evt => setMarkerLocation({ lng: evt.target.value })}
+          />
+          <input
+            name="alt"
+            className={styles.inputField + ' ' + styles.alt}
+            type="number"
+            value={value && value.alt ? value.alt : ''}
+            onChange={evt => setMarkerLocation({ alt: evt.target.value })}
+          />
+        </div>
+      )}
     </Fieldset>
   )
 })

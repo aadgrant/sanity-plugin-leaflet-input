@@ -7,5 +7,6 @@
     "lat": 37.779048,
     "lng": -122.415214
   },
-  "defaultZoom": 13
+  "defaultZoom": 13,
+  "showFields": false
 }
